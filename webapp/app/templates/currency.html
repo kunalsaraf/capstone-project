@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Body -->
+<div class="row">
+    <div class="col-lg-6">
+        <h1 class="medium-heading text-center">Currency Recognition</h1>
+        <form id="img-form" action="/currency" method="POST" enctype="multipart/form-data">
+            <div class="text-center">
+                {% if result_generated != "" %}
+                <img id="placeholder" src="../static/uploads/currency/{{result_generated}}" alt="placeholder"
+                class="content-display-dimension">
+                {% else %}
+                <img id="placeholder" src="../static/images/placeholder.jpg" alt="placeholder"
+                class="content-display-dimension">
+                {% endif %}
+                <video autoplay id="videoPlaceHolder" class="d-none content-display-dimension"></video>
+                <canvas id="canvas" class="d-none content-display-dimension"></canvas>
+                <input name="file1" role="button" type="file" accept="image/*" id="input1"
+                    onchange="loadFile(event)" class="d-none">
+                <button id="browse" type="button" class="mt-2 btn btn-lg btn-warning text-white btn-style-half" onclick="document.getElementById('input1').click()">Browse</button>
+                <button id="camera" type="button" class="mt-2 btn btn-lg btn-danger btn-style-half">Camera</button>
+                <button id="capture" type="button" class="mt-2 d-none btn btn-lg btn-danger btn-style-half">Capture</button>
+                <button id="upload" type="submit" class="my-2 btn btn-success btn-lg btn-style-full">Upload</button>
+            </div>
+        </form>
+    </div>
+    {% if result_generated != "" %}
+    <div class="col-lg-6">
+        <img src="../static/result/currency.jpg" class="justify-content-center align-self-center" alt="Result Graph"
+        class="content-display-dimension">
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -41,7 +41,7 @@ def myCommand():
     return command
 
 #while True:
-os.chdir('/home/kunal/capstone')
+os.chdir('/home/kunal/capstone-project')
 myCommand()
     
 

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Body -->
+<div class="row">
+    <div class="col-lg-6">
+
+        <h1 class="medium-heading text-center">Image Captioning</h1>
+        <form id="img-form" action="/caption" method="POST" enctype="multipart/form-data">
+            <div class="text-center">
+                <img id="placeholder" src="../static/images/placeholder.jpg" alt="placeholder"
+                    height="300px" width="450px">
+                <video height="300px" width="450px" autoplay id="videoPlaceHolder" class="d-none"></video>
+                <canvas id="canvas" width="450px" height="300px" class="d-none"></canvas>
+                <input name="file1" role="button" type="file" accept="image/*" id="input1"
+                    onchange="loadFile(event)" class="d-none">
+                <button id="browse" type="button" class="mt-2 btn btn-lg btn-warning text-white btn-style-half" onclick="document.getElementById('input1').click()">Browse</button>
+                <button id="camera" type="button" class="mt-2 btn btn-lg btn-danger btn-style-half">Camera</button>
+                <button id="capture" type="button" class="mt-2 d-none btn btn-lg btn-danger btn-style-half">Capture</button>
+                <button id="upload" type="submit" class="my-2 btn btn-success btn-lg btn-style-full">Upload</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

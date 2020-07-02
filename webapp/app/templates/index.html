@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Body -->
+<div class="row">
+  <div class="col-lg-6">
+    <h1 class="big-heading">Some amazing catchy line.</h1>
+    <button type="button" class="btn btn-dark btn-lg download-button" onclick="window.location.href='/currency'">
+      <!-- <i class="fab fa-apple"></i> -->
+      Currency<br>Recognition</button>
+    <button type="button" class="btn btn-outline-light btn-lg download-button" onclick="window.location.href='/caption'">
+      <!-- <i class="fab fa-google-play"></i> -->
+      Image<br>Captioning</button>
+  </div>  
+  <div class="col-lg-6 d-flex justify-content-center">
+    <img class="title-img" src="../static/images/title-img.png" alt="Some-photo-that-gupta-is-making">
+  </div>
+</div>
+{% endblock %}

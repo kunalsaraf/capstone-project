@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 <!-- Body -->
-<div class="row">
-    <div class="col-lg-6">
-        <h1 class="medium-heading text-center">Currency Recognition</h1>
+<h1 class="medium-heading text-center pull-me-up">Currency Recognition</h1>
+    
+<div class="row row-expand mt-4">
+    <div class="col-lg-6 align-inner-items-verticle-center">
         <form id="img-form" action="/currency" method="POST" enctype="multipart/form-data">
             <div class="text-center">
                 {% if result_generated != "" %}
@@ -26,7 +27,7 @@
     </div>
     {% if result_generated != "" %}
     <div class="col-lg-6">
-        <img src="../static/result/currency.jpg" class="justify-content-center align-self-center" alt="Result Graph"
+        <img src="../static/result/currency.jpg" class="justify-content-center align-self-center content-display-dimension" alt="Result Graph"
         class="content-display-dimension">
     </div>
     {% endif %}

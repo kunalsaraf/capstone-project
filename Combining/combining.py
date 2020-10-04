@@ -1,23 +1,51 @@
+######################## IMPORTING MODULES ########################
 from gtts import gTTS
 import os
 import speech_recognition as sr
 import cv2
-import matplotlib.pyplot as plt
-import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-import argparse
 import numpy as np
 import time
 global model
 MODEL_PATH = './model/model.h5'
 model = load_model(MODEL_PATH)
 
+
+######################## VOICE COMMANDS ########################
+
 # greetings = ['hey vision cap','hi vision cap','high vision cap','highvision cap','hello vision cap','hey bhajan cap','hi bhajan cap','high bhajan cap','highbhajan cap','hello bhajan cap','hey vision cab','hi vision cab','high vision cab','highvision cab','hello vision cab','hey bhajan cab','hi bhajan cab','high bhajan cab','highbhajan cab','hello bhajan cab']
 currency_voice_commands = ['recognise the currency', 'identify the currency','recognise the note','identify the note','recognise currency', 'identify currency','recognise note','identify note']
 object_voice_commands = ['list all objects in front of me', 'list the objects in front of me','list all the objects in front of me','identify the objects in front of me','identify all the objects in front of me']
 store_person_commands = ['store face of person in front of me', 'store face of the person in front of me','store the face of person in front of me','store a new face'] 
 recognise_person_commands = ['who is standing in front of me', 'who is there in front of me','recognise the person','identify the person']
+
+######################## USEFUL FUNCTIONS ########################
+
+def captureFrames(n):
+    # Here we are capturing 30 frames and saving every alternate frame 
+    to_be_captured = 2*n
+    camera = cv2.VideoCapture(0)
+    k = 0
+    for i in range(to_be_captured):
+        return_value, image = camera.read()
+        if i%2 == 0:
+            cv2.imwrite(str(k)+'.png', image)
+            k += 1
+    del(camera)
+
+def sayMyText(mytext):
+    # Passing the text and language to the engine, here we have marked slow=False, which tells the module that the converted audio should have a high speed 
+    myobj = gTTS(text=mytext, lang='en', slow=False)
+    
+    # Saving the converted audio in a mp3 file named
+    myobj.save("result.mp3")
+    
+    # Playing the converted file 
+    os.system("mpg321 result.mp3")
+
+
+######################## OBJECT DETECTION ########################
 
 yoloClasses="model/yolov3.txt"
 yoloConfig="model/yolov3.cfg"
@@ -27,17 +55,16 @@ with open(yoloClasses, 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 COLORS = np.random.uniform(0, 255, size=(len(classes), 3))
 
-def get_output_layers(net):
+def getOutputLayers(net):
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
     return output_layers
 
-
-def draw_prediction(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
-    label = str(classes[class_id])
-    color = COLORS[class_id]
-    cv2.rectangle(img, (x,y), (x_plus_w,y_plus_h), color, 2)
-    cv2.putText(img, label, (x-10,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+# def draw_prediction(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
+#     label = str(classes[class_id])
+#     color = COLORS[class_id]
+#     cv2.rectangle(img, (x,y), (x_plus_w,y_plus_h), color, 2)
+#     cv2.putText(img, label, (x-10,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 def predictObjects(filename):
     image = cv2.imread(filename)
@@ -47,7 +74,7 @@ def predictObjects(filename):
     net = cv2.dnn.readNet(yoloWeights, yoloConfig)
     blob = cv2.dnn.blobFromImage(image, scale, (416,416), (0,0,0), True, crop=False)
     net.setInput(blob)
-    outs = net.forward(get_output_layers(net))
+    outs = net.forward(getOutputLayers(net))
     class_ids = []
     confidences = []
     boxes = []
@@ -78,8 +105,29 @@ def predictObjects(filename):
             all_objects.add(className)
     return [all_objects,harmful_objects]
 
-def get_label(file_path):
-    processed_image = process_image(file_path)
+def objectDetection():
+	sayMyText('Capturing the image')
+	captureFrames(1)
+	sayMyText('Processing it')
+	mylist = predictObjects('0.png')
+	print(mylist)
+	if len(mylist[1]) == 0:
+		sayMyText('There are no harmful objects')
+	else:
+		sayMyText('Harmful objects are ')
+		for i in mylist[1]:
+			sayMyText(i)
+	if len(mylist[0]) == 0:
+		sayMyText('There are no non harmful objects')
+	else:
+		sayMyText('Non-harmful objects are ')
+		for i in mylist[0]:
+			sayMyText(i)
+
+######################## CURRENCY RECOGNITION ########################
+
+def getLabel(file_path):
+    processed_image = processImage(file_path)
     classes = model.predict(processed_image)
 #    print(classes)
     predicted_labels = classes.tolist()[0]
@@ -102,7 +150,7 @@ def get_label(file_path):
     print()
     return ans
 
-def process_image(file_path):
+def processImage(file_path):
     # img = load_img(file_path, target_size=(256, 256, 3))
     img = load_img(file_path, target_size=(128, 96, 3))
     img = img_to_array(img)
@@ -110,18 +158,6 @@ def process_image(file_path):
     img = img.reshape(1,128,96,3).astype('float')
     img /= 255
     return img
-
-def captureFrames(n):
-    # Here we are capturing 30 frames and saving every alternate frame 
-    to_be_captured = 2*n
-    camera = cv2.VideoCapture(0)
-    k = 0
-    for i in range(to_be_captured):
-        return_value, image = camera.read()
-        if i%2 == 0:
-            cv2.imwrite(str(k)+'.png', image)
-            k += 1
-    del(camera)
 
 def recogniseDenomination():
     _200 = 0
@@ -132,7 +168,7 @@ def recogniseDenomination():
     captureFrames(15)
     sayMyText('Processing it')
     for i in range(15):
-        ans = get_label(f'./{i}.png')
+        ans = getLabel(f'./{i}.png')
         if ans == 200:
             _200+=1
         elif ans == 500:
@@ -148,44 +184,16 @@ def recogniseDenomination():
     else:
         sayMyText('No result')
 
-def objectDetection():
-	sayMyText('Capturing the image')
-	captureFrames(1)
-	sayMyText('Processing it')
-	mylist = predictObjects('0.png')
-	print(mylist)
-	if len(mylist[1]) == 0:
-		sayMyText('There are no harmful objects')
-	else:
-		sayMyText('Harmful objects are ')
-		for i in mylist[1]:
-			sayMyText(i)
-	if len(mylist[0]) == 0:
-		sayMyText('There are no non harmful objects')
-	else:
-		sayMyText('Non-harmful objects are ')
-		for i in mylist[0]:
-			sayMyText(i)
+######################## FACE DETECTION AND RECOGNITION ########################
 
-
-def sayMyText(mytext):
-    # Passing the text and language to the engine, here we have marked slow=False, which tells the module that the converted audio should have a high speed 
-    myobj = gTTS(text=mytext, lang='en', slow=False)
-    
-    # Saving the converted audio in a mp3 file named
-    myobj.save("result.mp3")
-    
-    # Playing the converted file 
-    os.system("mpg321 result.mp3")
-
-# Face Detection
+# Importing Haarcascade for face detection
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-################## KNN CODE ###################
+# Calculated Euclidean Distance between two 1-D vectors 
 def distance(v1, v2):
-    # Euclidean
     return np.sqrt(((v1-v2)**2).sum())
 
+# Performing KNN on test image
 def knn(train, test, k=5):
     dist = []
     
@@ -207,11 +215,12 @@ def knn(train, test, k=5):
     # Find Max Frequency and Corresponding Label
     index = np.argmax(output[1])
     return output[0][index]
-###############################################
-    
-dataset_path = './trialData/'
 
-def ask_for_name():
+# Path for storing all numpy vectors of facial features    
+dataset_path = './faceData/'
+
+# This function asks name for the person while storing a new face
+def askForName():
 	sayMyText('Say the name of the new person:')
 	r = sr.Recognizer()
 	while True:
@@ -228,14 +237,14 @@ def ask_for_name():
 	    except:
 	    	sayMyText('Sorry, your voice was unclear. Please repeat the name')
 
-
-def collectData():
+# Stroing a new face
+def storeANewFace():
     skip = 0
     face_data = []
     
     #Init Camera
     cap = cv2.VideoCapture(0)
-    file_name = ask_for_name()
+    file_name = askForName()
     start = time.time()
     no_face = 0
     while True:
@@ -317,7 +326,7 @@ def prepareData():
         
         return trainset
 
-def captureFrame():
+def captureFace():
     cap = cv2.VideoCapture(0)
     start = time.time()
     no_face = 0
@@ -358,10 +367,9 @@ def recognizeFace(frame):
         sayMyText("The Person in Front is : " + pred_name)
 #    cv2.imshow("Faces", frame)
 
-    
+######################## DRIVER FUNCTION ########################
 
 def myCommand():
-    # listens for commands
     r = sr.Recognizer()
     
     initialCommand = 'Please speak after the beep'
@@ -382,16 +390,16 @@ def myCommand():
         elif command in object_voice_commands:
             objectDetection()
         elif command in store_person_commands:
-        	collectData()
+        	storeANewFace()
         elif command in recognise_person_commands:
-        	captureFrame()
+        	captureFace()
         else:
             print('Not able to understand',command)
             command = 'Sorry! Your last command was invalid'
             print(command)
             sayMyText(command)
 
-    # generate error if command is not heard
+    # Generate Error if Command is not heard
     except sr.UnknownValueError:
         command = 'Sorry! Your last command couldn\'t be heard'
         print(command)

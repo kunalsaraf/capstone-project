@@ -4,3 +4,6 @@
 
 ### One file was larger than 100MB, so kindly download it from the following link and paste it inside 'Combining/model/'
 https://drive.google.com/file/d/1v8nvkS30wrZA1hzv2XNj0eIvdQzj4Lwy/view?usp=sharing
+
+- Entry Point for Voice Driven Program - 'Combining/combining.py'
+- Entry Point for Web Server - 'webapp/run.py'

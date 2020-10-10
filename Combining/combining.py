@@ -248,7 +248,7 @@ def storeANewFace():
     start = time.time()
     no_face = 0
     while True:
-        if time.time() - start > 8:
+        if time.time() - start > 10:
             no_face = 1
             break
         _, frame = cap.read()
@@ -341,7 +341,7 @@ def captureFace():
             recognizeFace(frame)
             break
     if no_face == 1:
-    	print("No face detected")
+    	sayMyText("No face detected")
     cap.release()
     cv2.destroyAllWindows()
     

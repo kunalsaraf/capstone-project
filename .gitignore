@@ -4,3 +4,4 @@ webapp/capstone_inner/__pycache__
 venv
 Independent_Modules
 Combining/model/yolov3.weights
+webapp/capstone_inner/model/glove.6B.200d.txt

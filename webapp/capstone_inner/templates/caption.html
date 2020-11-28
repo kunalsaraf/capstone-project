@@ -1,10 +1,38 @@
 {% extends "layout.html" %}
 {% block content %}
 <!-- Body -->
-<div class="row">
-
-        <h1 class="medium-heading text-center">Image Captioning</h1>
-        <p> Sorry, this page is still under development, please try currency recognition in the mean time. </p>
-
+<h1 class="medium-heading text-center pull-me-up">Image Captioning</h1>
+    
+<div class="row row-expand mt-4">
+    <div class="col-lg-6 align-inner-items-verticle-center">
+        <form id="img-form" action="/caption" method="POST" enctype="multipart/form-data">
+            <div class="text-center">
+                {% if result_generated != "" %}
+                <img id="placeholder" src="../static/uploads/caption/{{result_generated}}" alt="placeholder"
+                class="content-display-dimension">
+                {% else %}
+                <img id="placeholder" src="../static/images/placeholder.jpg" alt="placeholder"
+                class="content-display-dimension">
+                {% endif %}
+                <video autoplay id="videoPlaceHolder" class="d-none content-display-dimension"></video>
+                <canvas id="canvas" class="d-none content-display-dimension"></canvas>
+                <input name="file1" role="button" type="file" accept="image/*" id="input1"
+                    onchange="loadFile(event)" class="d-none">
+                <button id="browse" type="button" class="mt-2 btn btn-lg btn-warning text-white btn-style-half" onclick="document.getElementById('input1').click()">Browse</button>
+                <button id="camera" type="button" class="mt-2 btn btn-lg btn-danger btn-style-half">Camera</button>
+                <button id="capture" type="button" class="mt-2 d-none btn btn-lg btn-danger btn-style-half">Capture</button>
+                <button id="upload" type="submit" class="my-2 btn btn-success btn-lg btn-style-full">Upload</button>
+            </div>
+        </form>
+    </div>
+    {% if result_generated != "" %}
+    <div class="col-lg-6">
+    	<h2 class="text-center"> Result </h2>
+    	<ul class="text-left">
+    		<li>By Greedy Algorithm = {{captions.greedy}}</li>
+    		<li>By Beam Search = {{captions.beam}}</li>
+    	</ul>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
